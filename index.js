@@ -26,10 +26,10 @@ app.post('/books', (req, res) => {
 });
 app.put('/books/:id',(req,res)=>{
   const {id} = req.params
-  const {book_id,name,author,genre,yaer,copies} = req.body
+  const {book_id,name,author,genre,year,copies} = req.body
   const book = data.filter(book=>book.book_id == id)
 
-  if(book_id||title||author||genre||copies||)
+  if(book_id||title||author||genre||copies)
   {
     return res.status(400).json({message:"please provide all details"})
   }
