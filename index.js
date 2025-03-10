@@ -6,15 +6,19 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 
-// In-memory book storage (Temporary, replace with DB later)
 // GET all books
 app.get('/books', (req, res) => {
   console.log(data);
   res.json(data);
 });
+
+// GET a book by ID
 app.get('/books/:id', (req, res) => {
   const { id } = req.params;
-  const book = data.filter((book) => book.book_id === id);
+  const book = data.find((book) => book.book_id === id);
+  if (!book) {
+    return res.status(404).json({ message: "Book not found" });
+  }
   res.json(book);
 });
 
@@ -24,24 +28,38 @@ app.post('/books', (req, res) => {
   data.push(book);
   res.json(book);
 });
-app.put('/books/:id',(req,res)=>{
-  const {id} = req.params
-  const {book_id,name,author,genre,year,copies} = req.body
-  const book = data.filter(book=>book.book_id == id)
 
-  if(book_id||title||author||genre||copies)
-  {
-    return res.status(400).json({message:"please provide all details"})
+// PUT (update) a book by ID
+app.put('/books/:id', (req, res) => {
+  const { id } = req.params;
+  const { book_id, name, author, genre, year, copies } = req.body;
+  const idx = data.findIndex((book) => book.book_id == id);
+
+  if (!book_id || !name || !author || !genre || !year || !copies) {
+    return res.status(400).json({ message: "Please provide all details" });
   }
-  if(idx==-1)
-  {
-    return res.status(400).json({message:"Book not found"})
+
+  if (idx === -1) {
+    return res.status(404).json({ message: "Book not found" });
   }
-  data[idx]={
-    ...req.body
+
+  data[idx] = { ...req.body };
+  res.json(data[idx]);
+});
+
+// DELETE a book by ID
+app.delete('/books/:id', (req, res) => {
+  const { id } = req.params;
+  const idx = data.findIndex((book) => book.book_id == id);
+
+  if (idx === -1) {
+    return res.status(404).json({ message: "Book not found" });
   }
-  res.json(data[idx])
-})
+
+  const deletedBook = data.splice(idx, 1);
+  res.json({ message: "Book deleted successfully", book: deletedBook });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
